@@ -54,32 +54,32 @@ fn compileRtMidi(b: *std.Build, target: std.Build.ResolvedTarget, optimize: std.
     };
     switch (t) {
         .macos => {
-            lib.linkFramework("CoreMIDI");
-            lib.linkFramework("CoreAudio");
-            lib.linkFramework("CoreFoundation");
-            lib.linkSystemLibrary("pthread");
+            lib.root_module.linkFramework("CoreMIDI", .{});
+            lib.root_module.linkFramework("CoreAudio", .{});
+            lib.root_module.linkFramework("CoreFoundation", .{});
+            lib.root_module.linkSystemLibrary("pthread", .{});
             lib.root_module.addCMacro("HAVE_LIBPTHREAD", "1");
         },
         .linux => {
-            lib.linkSystemLibrary("asound");
-            lib.linkSystemLibrary("pthread");
+            lib.root_module.linkSystemLibrary("asound", .{});
+            lib.root_module.linkSystemLibrary("pthread", .{});
             lib.root_module.addCMacro("HAVE_LIBPTHREAD", "1");
         },
         .windows => {
-            lib.linkSystemLibrary("winmm");
+            lib.root_module.linkSystemLibrary("winmm", .{});
             lib.root_module.addCMacro("HAVE_LIBPTHREAD", "0");
         },
         else => return error.NotSupported,
     }
 
-    lib.addCSourceFile(.{
+    lib.root_module.addCSourceFile(.{
         .file = .{ .dependency = .{
             .dependency = upstream,
             .sub_path = "RtMidi.cpp",
         } },
         .flags = cpp_flags,
     });
-    lib.addCSourceFile(.{
+    lib.root_module.addCSourceFile(.{
         .file = .{ .dependency = .{
             .dependency = upstream,
             .sub_path = "rtmidi_c.cpp",

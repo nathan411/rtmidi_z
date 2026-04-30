@@ -211,7 +211,7 @@ test {
 }
 
 test "ref" {
-    std.testing.refAllDeclsRecursive(@This());
+    std.testing.refAllDecls(@This());
 }
 
 pub const c = @import("c.zig");
