@@ -131,14 +131,16 @@ pub const In = opaque {
     }
 
     /// it is recommended to use a buffer of size 1024
-    pub fn getMessage(dev: *In, buf: []u8) f64 {
+    pub fn getMessage(dev: *In, buf: []u8) struct { delta: f64, len: usize } {
         var len: usize = buf.len;
-        return c.rtmidi_in_get_message(cast(dev), buf.ptr, &len);
+        const delta = c.rtmidi_in_get_message(cast(dev), buf.ptr, &len);
+        return .{ .delta = delta, .len = len };
     }
 
     pub fn getMessageSize(dev: *In) usize {
-        var size: usize = undefined;
-        _ = c.rtmidi_in_get_message(cast(dev), null, &size);
+        var size: usize = 0;
+        var dummy: [1]u8 = undefined;
+        _ = c.rtmidi_in_get_message(cast(dev), &dummy, &size);
         return size;
     }
 };
